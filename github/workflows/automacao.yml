@@ -1,0 +1,42 @@
+name: Automacao ETL SIAB_PATIO
+
+on:
+  schedule:
+    # Rodar todos os dias às 07:00, 13:00 e 16:00 (Horário de Brasília)
+    - cron: '0 10,16,19 * * *'
+  
+  workflow_dispatch: # Adiciona um botão no GitHub para você forçar a execução quando quiser testar
+
+jobs:
+  rodar-etl:
+    runs-on: ubuntu-latest # O servidor gratuito do GitHub
+
+    steps:
+      - name: Puxar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar o Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip' # Acelera a instalação nas próximas vezes
+
+      - name: Instalar bibliotecas
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Criar arquivo de credenciais do Google
+        # Injeta o texto do seu JSON secreto e cria o arquivo fisicamente no servidor
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          echo "$GCP_CREDENTIALS" > credenciais_google.json
+
+      - name: Executar o Script ETL
+        # Injeta as senhas no ambiente para o os.getenv do Python conseguir ler
+        env:
+          CPF_USUARIO: ${{ secrets.CPF_USUARIO }}
+          SENHA_BS: ${{ secrets.SENHA_BS }}
+        run: |
+          python Analise_embarques.py
