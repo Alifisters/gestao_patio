@@ -39,4 +39,4 @@ jobs:
           CPF_USUARIO: ${{ secrets.CPF_USUARIO }}
           SENHA_BS: ${{ secrets.SENHA_BS }}
         run: |
-          python Analise_embarques.py
+          python gestao_patio.py
