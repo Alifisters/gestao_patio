@@ -2,8 +2,7 @@ name: Automacao ETL SIAB_PATIO
 
 on:
   schedule:
-    # Rodar às 14:15 horário de Brasília (17:15 UTC)
-    - cron: '15 17 * * *'
+    - cron: '30 10,16,17,19 * * *'
   
   workflow_dispatch: # Adiciona um botão no GitHub para você forçar a execução quando quiser testar
 
