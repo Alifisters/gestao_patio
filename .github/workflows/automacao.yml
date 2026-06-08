@@ -2,7 +2,7 @@ name: Automacao ETL SIAB_PATIO
 on:
   schedule:
     # Seus horários automáticos continuam rodando normalmente
-    - cron: '30 10,16,17,19 * * *'
+    - cron: '00 10,16,17,19 * * *'
   
   # ESSE É O COMANDO QUE CRIA O BOTÃO MANUAL
   workflow_dispatch: 
