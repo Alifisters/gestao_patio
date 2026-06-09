@@ -18,9 +18,9 @@ import os
 # ==========================================
 # 1. CONFIGURAÇÕES E CREDENCIAIS
 # ==========================================
-CPF_USUARIO = os.getenv("CPF_USUARIO")
-SENHA_BS = os.getenv("SENHA_BS")
-CREDENCIAL_JSON_SIAB = "credenciais_google.json"
+CPF_USUARIO = "70634444174"
+SENHA_BS = 25654789
+CREDENCIAL_JSON_SIAB = r"C:\Users\aleff\OneDrive\Área de Trabalho\Py\sharp-doodad-472618-r7-6deb50560b3f.json"
 
 # URLs da API
 BASE_URL = "https://business.comigo.com.br:45004"
@@ -308,6 +308,19 @@ if "Cod Centro" in df_movimentos.columns:
 
 tabela_final = tabela_final[tabela_final["Concluido"] != True]
 
+# ==========================================
+# PADRONIZANDO OS NOMES PARA PERMITIR FILTRO
+# ==========================================
+tabela_final["Transacionador"] = (tabela_final["Transacionador"]
+                                  .str.upper()
+                                  .str.replace("/", " ", regex=False)
+                                  .str.replace(".", " ", regex=False)
+                                  .str.replace("  ", " ", regex=False))
+df_movimentos["Transacionador"] = (df_movimentos["Transacionador"]
+                                   .str.upper()
+                                   .str.replace("/", " ", regex=False)
+                                   .str.replace(".", " ", regex=False)
+                                   .str.replace("  ", " ", regex=False))
 # ==========================================
 # 6. CARGA (LOAD) - GOOGLE SHEETS
 # ==========================================
