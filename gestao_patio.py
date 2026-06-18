@@ -156,7 +156,8 @@ for centro in CENTROS_ARMAZENS:
         "json": json.dumps(param_json),
         "Permissao": json.dumps(param_permissao)
     }
-    response = session.get(API_RELATORIO, params=payload_relatorio) # pega dados dos RP por centro
+    # pega dados dos RP por centro
+    response = session.get(API_RELATORIO, params=payload_relatorio)
 
     if response.status_code == 200:
         try:
@@ -235,8 +236,10 @@ tabela_final = tabela_final.rename(columns={
 df_total["Patio Externo"] = ~df_total["Placa"].isin(tabela_final["Placa"])
 df_total = df_total[df_total["Patio Externo"] != False]
 
-patio_externo = df_total[["Placa", "Centro", "RP", "Patio Externo","TipoPesagem"]].rename(columns={"Centro": "Centro-Armazem"})
-patio_externo[["Centro", "Armazem"]] = patio_externo["Centro-Armazem"].str.split("-", n=1, expand=True)
+patio_externo = df_total[["Placa", "Centro", "RP", "Patio Externo",
+                          "TipoPesagem"]].rename(columns={"Centro": "Centro-Armazem"})
+patio_externo[["Centro", "Armazem"]
+              ] = patio_externo["Centro-Armazem"].str.split("-", n=1, expand=True)
 patio_externo = patio_externo.drop(columns=["Centro-Armazem"])
 
 print("\nETAPA 5: Coletando dados de movimentação...")
@@ -261,7 +264,8 @@ for centro in CENTROS_ARMAZENS:
     except Exception as e:
         print(f"Erro ao ler movimentação do centro {centro}: {e}")
 
-df_movimentos[["Centro", "Armazem"]] = df_movimentos["Centro"].str.split("-", n=1, expand=True)
+df_movimentos[["Centro", "Armazem"]] = df_movimentos["Centro"].str.split(
+    "-", n=1, expand=True)
 
 colunas_mov = ["PesoBruto", "Tara", "PesoTotalBruto", "Descontos", "Acerto"]
 for coluna in colunas_mov:
@@ -280,7 +284,8 @@ remover_mov = [
     'DescontoQuebradosPorc', 'DescontoMofadosPorc', 'DescontoMofados', 'DescontoAvariadosPorc',
     'PesoLiquido', 'DescricaoMoega', 'DescricaoArmazem'
 ]
-df_movimentos = df_movimentos.drop(columns=[col for col in remover_mov if col in df_movimentos.columns])
+df_movimentos = df_movimentos.drop(
+    columns=[col for col in remover_mov if col in df_movimentos.columns])
 
 df_movimentos = df_movimentos.rename(columns={
     "DataEntrada": "Data Entrada", "TipoPesagem": "Tipo Pesagem",
@@ -300,8 +305,8 @@ df_movimentos = df_movimentos.merge(
 if "Cod Centro" in df_movimentos.columns:
     df_movimentos.pop("Cod Centro")
 
-tabela_final_aberto = tabela_final[tabela_final["Concluido"]==False]
-tabela_final = tabela_final[tabela_final["Concluido"]==True]
+tabela_final_aberto = tabela_final[tabela_final["Concluido"] == False]
+tabela_final = tabela_final[tabela_final["Concluido"] == True]
 
 # ==========================================
 # PADRONIZANDO OS NOMES PARA PERMITIR FILTRO
@@ -312,10 +317,10 @@ tabela_final["Transacionador"] = (tabela_final["Transacionador"]
                                   .str.replace(".", " ", regex=False)
                                   .str.replace("  ", " ", regex=False))
 tabela_final_aberto["Transacionador"] = (tabela_final_aberto["Transacionador"]
-                                  .str.upper()
-                                  .str.replace("/", " ", regex=False)
-                                  .str.replace(".", " ", regex=False)
-                                  .str.replace("  ", " ", regex=False))
+                                         .str.upper()
+                                         .str.replace("/", " ", regex=False)
+                                         .str.replace(".", " ", regex=False)
+                                         .str.replace("  ", " ", regex=False))
 df_movimentos["Transacionador"] = (df_movimentos["Transacionador"]
                                    .str.upper()
                                    .str.replace("/", " ", regex=False)
@@ -324,13 +329,19 @@ df_movimentos["Transacionador"] = (df_movimentos["Transacionador"]
 # ====================================================================================
 # CRIANDO MEDIDAS DE TEMPO PARA ANALISE DE PERFORMANCE EM CADA ETAPA
 # ====================================================================================
-tabela_final["Tmp Espera Entrada"] = tabela_final["Entrada Portaria"] - tabela_final["Check-in Portaria"]
-tabela_final["Tmp Ini Carregamento"] = tabela_final["Pesagem de Entrada"] - tabela_final["Entrada Portaria"]
-tabela_final["Tmp Carregamento"] = tabela_final["Pesagem Saída"] - tabela_final["Pesagem de Entrada"]
-tabela_final["Tmp Liberação"] = tabela_final["Saída Portaria"] - tabela_final["Pesagem Saída"]
-metrica_tmp = ['Tmp Espera Entrada','Tmp Ini Carregamento', 'Tmp Carregamento', 'Tmp Liberação']
+tabela_final["Tmp Espera Entrada"] = tabela_final["Entrada Portaria"] - \
+    tabela_final["Check-in Portaria"]
+tabela_final["Tmp Ini Carregamento"] = tabela_final["Pesagem de Entrada"] - \
+    tabela_final["Entrada Portaria"]
+tabela_final["Tmp Carregamento"] = tabela_final["Pesagem Saída"] - \
+    tabela_final["Pesagem de Entrada"]
+tabela_final["Tmp Liberação"] = tabela_final["Saída Portaria"] - \
+    tabela_final["Pesagem Saída"]
+metrica_tmp = ['Tmp Espera Entrada', 'Tmp Ini Carregamento',
+               'Tmp Carregamento', 'Tmp Liberação']
 for coluna in metrica_tmp:
-    tabela_final[coluna] = tabela_final[coluna].apply(lambda x: f"{int(x.total_seconds()) // 3600:02}:{int(x.total_seconds()) % 3600 // 60:02}:{int(x.total_seconds()) % 60:02}" if pd.notna(x) else None)
+    tabela_final[coluna] = tabela_final[coluna].apply(
+        lambda x: f"{int(x.total_seconds()) // 3600:02}:{int(x.total_seconds()) % 3600 // 60:02}:{int(x.total_seconds()) % 60:02}" if pd.notna(x) else None)
 # ==========================================
 # 6. CARGA (LOAD) - GOOGLE SHEETS
 # ==========================================
@@ -341,7 +352,8 @@ try:
 
     aba_siab = geral.worksheet("Rel_Siab")
     aba_siab.clear()
-    set_with_dataframe(worksheet=aba_siab, dataframe=tabela_final_aberto, resize=True)
+    set_with_dataframe(worksheet=aba_siab,
+                       dataframe=tabela_final_aberto, resize=True)
     print(f"Planilha {aba_siab.title} atualizada!")
 
     patio_ext = geral.worksheet("Patio_externo")
@@ -358,7 +370,7 @@ try:
 
     his_siab = geral.worksheet("His_Siab")
     his_siab.clear()
-    set_with_dataframe(worksheet=his_siab,dataframe=tabela_final, resize=True)
+    set_with_dataframe(worksheet=his_siab, dataframe=tabela_final, resize=True)
     print(f"Planilha {his_siab.title} atualizada!\n")
 
     print("🚀 PROCESSO FINALIZADO COM SUCESSO!")
