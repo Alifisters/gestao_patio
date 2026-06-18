@@ -1,11 +1,12 @@
 name: Automacao ETL SIAB_PATIO
+
 on:
-  schedule:
-    # Seus horários automáticos continuam rodando normalmente
-    - cron: '00 10,16,17,19 * * *'
-  
-  # ESSE É O COMANDO QUE CRIA O BOTÃO MANUAL
+  # Gatilho para ser acionado manualmente ou via macro do Excel
   workflow_dispatch: 
+  
+  # Agendamento Automático
+  schedule:
+    - cron: '00 10,16,17,19 * * *'
 
 jobs:
   build:
@@ -19,9 +20,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' # Acelera a instalação nas próximas vezes
+          cache: 'pip' 
 
       - name: Instalar bibliotecas
+        # Como você já tem o arquivo requirements.txt, usamos ele para instalar tudo de uma vez
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -29,14 +31,15 @@ jobs:
       - name: Criar arquivo de credenciais do Google
         # Injeta o texto do seu JSON secreto e cria o arquivo fisicamente no servidor
         env:
-          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          CONTEUDO_JSON: ${{ secrets.GCP_CREDENTIALS }}
         run: |
-          echo "$GCP_CREDENTIALS" > credenciais_google.json
+          echo "$CONTEUDO_JSON" > credenciais_google.json
 
       - name: Executar o Script ETL
-        # Injeta as senhas no ambiente para o os.getenv do Python conseguir ler
         env:
           CPF_USUARIO: ${{ secrets.CPF_USUARIO }}
           SENHA_BS: ${{ secrets.SENHA_BS }}
+          # A GRANDE SACADA: Informamos ao Python que o "GCP_CREDENTIALS" é o nome do arquivo recém-criado
+          GCP_CREDENTIALS: credenciais_google.json
         run: |
           python gestao_patio.py
