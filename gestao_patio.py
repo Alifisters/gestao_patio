@@ -18,9 +18,9 @@ import os
 # ==========================================
 # 1. CONFIGURAÇÕES E CREDENCIAIS
 # ==========================================
-CPF_USUARIO = os.geteven("CPF_USUARIO")
-SENHA_BS = os.geteven("SENHA_BS")
-CREDENCIAL_JSON_SIAB = os.geteven("GCP_CREDENTIALS")
+CPF_USUARIO = os.getenv("CPF_USUARIO")
+SENHA_BS = os.getenv("SENHA_BS")
+CREDENCIAL_JSON_SIAB = os.getenv("GCP_CREDENTIALS")
 
 # URLs da API
 BASE_URL = "https://business.comigo.com.br:45004"
