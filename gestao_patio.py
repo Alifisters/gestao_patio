@@ -18,9 +18,9 @@ import os
 # ==========================================
 # 1. CONFIGURAÇÕES E CREDENCIAIS
 # ==========================================
-CPF_USUARIO = "70634444174"
-SENHA_BS = 25654789
-CREDENCIAL_JSON_SIAB = r"C:\Users\aleff\OneDrive\Área de Trabalho\Py\sharp-doodad-472618-r7-6deb50560b3f.json"
+CPF_USUARIO = os.geteven("CPF_USUARIO")
+SENHA_BS = os.geteven("SENHA_BS")
+CREDENCIAL_JSON_SIAB = os.geteven("GCP_CREDENTIALS")
 
 # URLs da API
 BASE_URL = "https://business.comigo.com.br:45004"
